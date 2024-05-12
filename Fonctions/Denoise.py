@@ -7,7 +7,6 @@ Created on Tue May  7 14:17:55 2024
 """
 import Log.python3
 import cv2
-import os
 import AddNoise.python3
 import NLMeans.python3
 
@@ -21,7 +20,9 @@ def denoise(index, verbose = True, gaussian = False, salted = True, rician = Fal
   - adds noise
   - Denoises with various filters and logs the output
   - Saves all images
-
+  - Create two directories: Noised and Denoised to save the images before executing the code below.
+  - Dont forget to change the path 
+  
   '''
   print('DENOISING IMAGE', index)
   
@@ -76,13 +77,13 @@ def denoise(index, verbose = True, gaussian = False, salted = True, rician = Fal
         nlmFilteredSalted_Grayscale = nonLocalMeans_Grayscale(saltNoised, params = (saltParams['bigWindow'], saltParams['smallWindow'],saltParams['h']), verbose = verbose)    
         #write images to file
         cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Noised/Image' + str(index) + '-SPNOISE-GRAYSCALE.png', saltNoised)
-        cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/NLMFilter/Image' + str(index) + '-NLM-Salted-GRAYSCALE.png', nlmFilteredSalted_Grayscale)
+        cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Denoised/Image' + str(index) + '-NLM-Salted-GRAYSCALE.png', nlmFilteredSalted_Grayscale)
       else :
         #perform NLM filtering
         nlmFilteredSalted_RGB = nonLocalMeans_RGB(saltNoised, params = (saltParams['bigWindow'], saltParams['smallWindow'],saltParams['h']), verbose = verbose)
         #write images to file
         cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Noised/Image' + str(index) + '-SPNOISE-RGB.png', saltNoised)
-        cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/NLMFilter/Image' + str(index) + '-NLM-Salted-RGB.png', nlmFilteredSalted_RGB)
+        cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Denoised/Image' + str(index) + '-NLM-Salted-RGB.png', nlmFilteredSalted_RGB)
         
   if rician:
     # Paramètres du filtre NLM adaptés pour le bruit Ricien
