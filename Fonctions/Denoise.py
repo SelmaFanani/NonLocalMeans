@@ -24,10 +24,6 @@ def denoise(index, verbose = True, gaussian = False, salted = True, rician = Fal
 
   '''
   print('DENOISING IMAGE', index)
-
-  #For logistical purposes
-  f = open('/Users/selmafanani/Downloads' +str(index)+'-LOG.csv','w')
-  f.close()
   
   grayscale = False
   scale = 2 #Scale factor of the image
@@ -42,9 +38,6 @@ def denoise(index, verbose = True, gaussian = False, salted = True, rician = Fal
   saltNoised = AddNoise.addNoise(gtImg, 'SALTNPEPPER', p = p)
   ricianNoised = AddNoise.addNoise(gtImg, 'RICIAN', sigma = sigma1)
 
-  # Parameters for denoising using gaussian filter
- # kernelSize = 3
-  #kernel = (kernelSize , kernelSize)
   
   if gaussian:
     #NLM filter parameters
@@ -55,20 +48,18 @@ def denoise(index, verbose = True, gaussian = False, salted = True, rician = Fal
       'scale':scale,
     }
 
-    #perform NLM filtering
-    nlmFilteredGNoised = NLMeans.nonLocalMeans(gNoised, params = (gParams['bigWindow'], gParams['smallWindow'],gParams['h']), verbose = verbose)
-
-    #perform gaussian filtering
-    #gFilteredGNoised = cv2.GaussianBlur(gNoised,kernel,0)
-    
-    #log the results
-    #log(index, gtImg, gNoised, gFilteredGNoised, nlmFilteredGNoised,  gParams, gaussian = True)
-    
+  if grayscale : 
+     #perform NLM filtering
+    nlmFilteredGNoised_Grayscale = NLMeans.nonLocalMeans_Grayscale(gNoised, params = (gParams['bigWindow'], gParams['smallWindow'],gParams['h']), verbose = verbose)
     #write images to file
-    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Noised/Image' + str(index) + '-GNOISE.png', gNoised)
-    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Denoised/Image' + str(index) + '-NLM-Gauss.png', nlmFilteredGNoised)
-    #cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/GT/Image' + str(index) + '-GF-Gauss.png', gFilteredGNoised)
-
+    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Noised/Image' + str(index) + '-GNOISE-GRAYSCALE.png', gNoised)
+    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Denoised/Image' + str(index) + '-NLM-Gauss-GRAYSCALE.png', nlmFilteredGNoised_Grayscale)
+  else :
+     #perform NLM filtering
+    nlmFilteredGNoised_RGB = NLMeans.nonLocalMeans_RGB(gNoised, params = (gParams['bigWindow'], gParams['smallWindow'],gParams['h']), verbose = verbose)
+    #write images to file
+    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Noised/Image' + str(index) + '-GNOISE-RGB.png', gNoised)
+    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Denoised/Image' + str(index) + '-NLM-Gauss-RGB.png', nlmFilteredGNoised_RGB)
 
   
   if salted:
@@ -80,22 +71,19 @@ def denoise(index, verbose = True, gaussian = False, salted = True, rician = Fal
       'scale':scale,
     }
 
+  if grayscale : 
     #perform NLM filtering
-    nlmFilteredSalted = NLMeans.nonLocalMeans(saltNoised, params = (saltParams['bigWindow'], saltParams['smallWindow'],saltParams['h']), verbose = verbose)
-
-    #perform gaussian filtering
-    #gFilteredSalted= cv2.GaussianBlur(saltNoised,kernel,0)
-    
-    #log the results
-    #log( index, gtImg, saltNoised, gFilteredSalted, nlmFilteredSalted,  saltParams, salted = True)
-    
+    nlmFilteredSalted_Grayscale = NLMeans.nonLocalMeans_Grayscale(saltNoised, params = (saltParams['bigWindow'], saltParams['smallWindow'],saltParams['h']), verbose = verbose)    
     #write images to file
-    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Noised/Image' + str(index) + '-SPNOISE.png', saltNoised)
-    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/NLMFilter/Image' + str(index) + '-NLM-Salted.png', nlmFilteredSalted)
-    #cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/GFilter/Image' + str(index) + '-GF-Salted.png', gFilteredSalted)
-  
-    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/GT/Image' + str(index) + '-GT.png', gtImg)
-  
+    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Noised/Image' + str(index) + '-SPNOISE-GRAYSCALE.png', saltNoised)
+    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/NLMFilter/Image' + str(index) + '-NLM-Salted-GRAYSCALE.png', nlmFilteredSalted_Grayscale)
+  else :
+    #perform NLM filtering
+    nlmFilteredSalted_RGB = NLMeans.nonLocalMeans_RGB(saltNoised, params = (saltParams['bigWindow'], saltParams['smallWindow'],saltParams['h']), verbose = verbose)
+    #write images to file
+    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Noised/Image' + str(index) + '-SPNOISE-RGB.png', saltNoised)
+    cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/NLMFilter/Image' + str(index) + '-NLM-Salted-RGB.png', nlmFilteredSalted_RGB)
+    
   if rician:
     # Paramètres du filtre NLM adaptés pour le bruit Ricien
     rParams = {
@@ -106,17 +94,10 @@ def denoise(index, verbose = True, gaussian = False, salted = True, rician = Fal
     }
     
     #perform NLM filtering
-    nlmFilteredRNoised = NLMeans.nonLocalMeans(ricianNoised, params = (rParams['bigWindow'], rParams['smallWindow'],rParams['h']), verbose = verbose)
-
-    #perform gaussian filtering
-    #rFilteredRNoised = cv2.GaussianBlur(ricianNoised,kernel,0)
-    
-    #log the results
-    #log(index, gtImg, ricianNoised, rFilteredRNoised, nlmFilteredRNoised,  rParams, rician = True)
+    nlmFilteredRNoised = NLMeans.nonLocalMeans_Grayscale(ricianNoised, params = (rParams['bigWindow'], rParams['smallWindow'],rParams['h']), verbose = verbose)
     
     #write images to file
     cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Noised/Image' + str(index) + '-RNOISE.png', ricianNoised)
     cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/Denoised/Image' + str(index) + '-NLM-Rician.png', nlmFilteredRNoised)
-    #cv2.imwrite('/Users/selmafanani/Downloads/Dossier_MI/GT/Image' + str(index) + '-GF-Rician.png', rFilteredRNoised)
 
   print("--------COMPLETED IMAGE", index, '-----------')
