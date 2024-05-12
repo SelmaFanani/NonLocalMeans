@@ -6,14 +6,10 @@ Created on Tue May  7 14:14:48 2024
 @author: selmafanani
 """
 
-from numba import jit
-import numpy as np
-
-
 @jit(nopython=True)
-def nonLocalMeans(noisy, params = tuple(), verbose = True):
+def nonLocalMeans_RGB(noisy, params = tuple(), verbose = True):
   '''
-  Performs the non-local-means algorithm given a noisy image.
+  Performs the non-local-means algorithm given a noisy RGB image.
   params is a tuple with:
   params = (bigWindowSize, smallWindowSize, h)
   Please keep bigWindowSize and smallWindowSize as even numbers
@@ -28,8 +24,8 @@ def nonLocalMeans(noisy, params = tuple(), verbose = True):
       paddedImage = np.zeros((image.shape[0] + bigWindowSize,image.shape[1] + bigWindowSize, 3))
       paddedImage = paddedImage.astype(np.uint8)
       paddedImage[padwidth:padwidth+image.shape[0], padwidth:padwidth+image.shape[1], :] = image
-      paddedImage[padwidth:padwidth+image.shape[0], 0:padwidth, :] = np.fliplr(image[:,0:padwidth, :])
-      paddedImage[padwidth:padwidth+image.shape[0], image.shape[1]+padwidth:image.shape[1]+2*padwidth, :] = np.fliplr(image[:,image.shape[1]-padwidth:image.shape[1], :])
+      paddedImage[padwidth:padwidth+image.shape[0], 0:padwidth, :] = np.fliplr(image[:, 0:padwidth, :])
+      paddedImage[padwidth:padwidth+image.shape[0], image.shape[1]+padwidth:image.shape[1]+2*padwidth, :] = np.fliplr( image[:, image.shape[1]-padwidth:image.shape[1], :])
       paddedImage[0:padwidth,:, :] = np.flipud(paddedImage[padwidth:2*padwidth, :, :])
       paddedImage[padwidth+image.shape[0]:2*padwidth+image.shape[0], :, :] =np.flipud(paddedImage[paddedImage.shape[0] - 2*padwidth:paddedImage.shape[0] - padwidth,:, :])
       
@@ -56,7 +52,7 @@ def nonLocalMeans(noisy, params = tuple(), verbose = True):
           compNbhd = paddedImage[imageY - smallhalfwidth:imageY + smallhalfwidth + 1,imageX-smallhalfwidth:imageX+smallhalfwidth + 1, :]
           
           
-          pixelColor = np.zeros(3,)
+          pixelColor = np.zeros(3)
           totalWeight = 0
     
           # For each comparison neighbourhood, search for all small windows within a large box, and compute their weights
@@ -66,7 +62,7 @@ def nonLocalMeans(noisy, params = tuple(), verbose = True):
               smallNbhd = paddedImage[sWinY:sWinY+smallWindowSize + 1,sWinX:sWinX+smallWindowSize + 1, :]
               euclideanDistance = np.sqrt(np.sum(np.square(smallNbhd - compNbhd)))
               #weight is computed as a weighted softmax over the euclidean distances
-              weight = np.exp(-euclideanDistance/h)
+              weight = np.exp(-(euclideanDistance)**2/h**2)
               totalWeight += weight
               pixelColor += weight*paddedImage[sWinY + smallhalfwidth, sWinX + smallhalfwidth,]
               iterator += 1
@@ -81,7 +77,19 @@ def nonLocalMeans(noisy, params = tuple(), verbose = True):
           
       return  outputImage[padwidth:padwidth+image.shape[0],padwidth:padwidth+image.shape[1], :] 
 
-  else :
+@jit(nopython=True)
+def nonLocalMeans_Grayscale(noisy, params = tuple(), verbose = True):
+      '''
+      Performs the non-local-means algorithm given a noisy Grayscale image.
+      params is a tuple with:
+      params = (bigWindowSize, smallWindowSize, h)
+      Please keep bigWindowSize and smallWindowSize as even numbers
+      '''
+
+      bigWindowSize, smallWindowSize, h  = params
+      padwidth = bigWindowSize//2
+      image = noisy.copy()
+    
       paddedImage = np.zeros((image.shape[0] + bigWindowSize,image.shape[1] + bigWindowSize))
       paddedImage = paddedImage.astype(np.uint8)
       paddedImage[padwidth:padwidth+image.shape[0], padwidth:padwidth+image.shape[1]] = image
@@ -136,5 +144,5 @@ def nonLocalMeans(noisy, params = tuple(), verbose = True):
         
             pixelColor /= totalWeight
             outputImage[imageY, imageX] = pixelColor
-      return outputImage[padwidth:padwidth+image.shape[0], padwidth:padwidth+image.shape[1], np.newaxis]
-                
+      return outputImage[padwidth:padwidth+image.shape[0], padwidth:padwidth+image.shape[1]]
+                                
