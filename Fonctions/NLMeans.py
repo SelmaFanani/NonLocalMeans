@@ -73,7 +73,7 @@ def nonLocalMeans_RGB(noisy, params = tuple(), verbose = True):
                   print('% COMPLETE = ', percentComplete)
     
           pixelColor /= totalWeight
-          outputImage[imageY - padwidth, imageX - padwidth, :] = pixelColor
+          outputImage[imageY , imageX , :] = pixelColor
           
       return  outputImage[padwidth:padwidth+image.shape[0],padwidth:padwidth+image.shape[1], :] 
 
