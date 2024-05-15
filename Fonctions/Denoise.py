@@ -5,7 +5,6 @@ Created on Tue May  7 14:17:55 2024
 
 @author: selmafanani
 """
-import Log.python3
 import cv2
 import AddNoise.python3
 import NLMeans.python3
@@ -18,10 +17,10 @@ def denoise(index, verbose = True, gaussian = False, salted = True, rician = Fal
   - takes an index
   - gets the images
   - adds noise
-  - Denoises with various filters and logs the output
+  - Denoises with various filters 
   - Saves all images
-  - Create two directories: Noised and Denoised to save the images before executing the code below.
-  - Dont forget to change the path 
+    Dont forget to : 
+  - Create two directories: Noised and Denoised to save the images before executing the code below and change the path 
   
   '''
   print('DENOISING IMAGE', index)
