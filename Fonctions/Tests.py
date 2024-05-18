@@ -1,7 +1,9 @@
 import numpy as np
 import cv2
 from skimage.metrics import structural_similarity as ssim
-#Cette fonctiont prend en argument deux images à comparer et renvoie les trois résultats de tests sur ces dernières
+"""
+Cette fonctiont prend en argument deux images à comparer et renvoie les trois résultats de tests sur ces dernières
+"""
 
 def Tests(cheminImage1,cheminImage2):
     # Charger les images
