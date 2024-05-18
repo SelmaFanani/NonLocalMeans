@@ -17,7 +17,7 @@ from multiprocessing import Pool
 if __name__ == '__main__':
   #multiprocessing allows us to parallely finish off all images!
 	pool = Pool(processes=os.cpu_count())
-	pool.map(Denoise.denoise, [1, 2, 3, 4, 14, 15, 16, 18])
+	pool.map(Denoise.denoise, [1, 2, 3, 4,32, 30])
 
 # Tests
 image_path1 = 'image1.png'
