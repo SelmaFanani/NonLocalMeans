@@ -4,6 +4,8 @@
 Created on Tue May  7 14:23:05 2024
 
 @author: selmafanani
+- Dont forget to change the denoise function before executing Main
+- Add the index of the images you want to Noise / Denoise
 """
 import os
 import Denoise.python3
