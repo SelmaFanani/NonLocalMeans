@@ -22,5 +22,5 @@ if __name__ == '__main__':
 """Mettre les deux chemin d'images que vous voulez comparer"""
 image_path1 = 'image1.png'
 image_path2 = 'image2.png'
-print(compare_images(image_path1, image_path2))
+print(Tests(image_path1, image_path2))
 
