@@ -19,7 +19,7 @@ if __name__ == '__main__':
 	pool = Pool(processes=os.cpu_count())
 	pool.map(Denoise.denoise, [1, 2, 3, 4,32, 30])
 
-# Tests
+"""Mettre les deux chemin d'images que vous voulez comparer"""
 image_path1 = 'image1.png'
 image_path2 = 'image2.png'
 print(compare_images(image_path1, image_path2))
